@@ -29,12 +29,28 @@ In a second terminal, after the backend is up:
 
 ```bash
 npm install
-npm run dev                                    # Vite hot-reload during development
-# or:
-npm run build                                  # one-shot production build, then no need for npm
+npm run build                                  # one-shot production build (~500ms)
 ```
 
-Open `http://127.0.0.1:8000/` in a browser — you'll land on the SPA with three tabs: **Submit issue**, **Issues**, and **Help center**.
+Then open **`http://127.0.0.1:8000/`** in a browser — you'll land on the SPA with three tabs: **Submit issue**, **Issues**, and **Help center**.
+
+> **Important:** the URL is **`:8000`** (the Laravel server), not Vite. Even if you opt for hot-reload below, you always visit `:8000`.
+
+#### Optional — hot reload while editing the frontend
+
+If you want changes to `.vue` files to appear instantly without a rebuild:
+
+```bash
+npm run dev                                    # starts Vite on :5173
+```
+
+You'll see Vite log a status URL at `http://localhost:5173`. **Don't visit that** — it's a build server, not your app. Keep visiting `http://127.0.0.1:8000/`. Laravel's `@vite` directive automatically routes asset requests to Vite's hot-reload server while it's running.
+
+Two things will be true at the same time during dev:
+- Laravel serves the HTML at `:8000`
+- Vite serves the JS/CSS from `:5173` with hot reload (browser fetches from both)
+
+When you stop `npm run dev`, Laravel falls back to the production build at `public/build/` automatically. No config switch.
 
 ### Optional — turn on the LLM layer
 
