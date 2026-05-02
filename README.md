@@ -10,7 +10,7 @@ I wrote this in waterfall phases — there's a granular play-by-play in [`0-docu
 
 ## Quick start
 
-### Backend only (API + seeded data)
+One-time setup:
 
 ```bash
 composer install
@@ -18,39 +18,28 @@ cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite                # SQLite is the default driver
 php artisan migrate:fresh --seed
+npm install
+```
+
+Then run the backend and frontend in **two separate terminals** (both need to stay running):
+
+**Terminal 1 — backend:**
+```bash
 php artisan serve
 ```
 
-Hit `http://127.0.0.1:8000/api/issues` and you'll see 10 seeded tickets, two of which are already auto-flagged for escalation.
-
-### With the SPA UI (recommended for the demo)
-
-In a second terminal, after the backend is up:
-
+**Terminal 2 — frontend (Vite hot-reload):**
 ```bash
-npm install
-npm run build                                  # one-shot production build (~500ms)
+npm run dev
 ```
 
-Then open **`http://127.0.0.1:8000/`** in a browser — you'll land on the SPA with three tabs: **Submit issue**, **Issues**, and **Help center**.
+Open **`http://127.0.0.1:8000/`** in your browser — you'll land on the SPA with three tabs: **Submit issue**, **Issues**, and **Help center**.
 
-> **Important:** the URL is **`:8000`** (the Laravel server), not Vite. Even if you opt for hot-reload below, you always visit `:8000`.
+> **Important:** always visit `:8000` (the Laravel server). Vite logs `http://localhost:5173` to its terminal — **don't visit that**, it's a build server, not your app. Laravel's `@vite` directive routes asset requests to Vite automatically while `npm run dev` is running.
 
-#### Optional — hot reload while editing the frontend
+If you'd rather not keep `npm run dev` running, use `npm run build` once instead — it bakes the assets into `public/build/` and Laravel serves them directly. No second terminal needed.
 
-If you want changes to `.vue` files to appear instantly without a rebuild:
-
-```bash
-npm run dev                                    # starts Vite on :5173
-```
-
-You'll see Vite log a status URL at `http://localhost:5173`. **Don't visit that** — it's a build server, not your app. Keep visiting `http://127.0.0.1:8000/`. Laravel's `@vite` directive automatically routes asset requests to Vite's hot-reload server while it's running.
-
-Two things will be true at the same time during dev:
-- Laravel serves the HTML at `:8000`
-- Vite serves the JS/CSS from `:5173` with hot reload (browser fetches from both)
-
-When you stop `npm run dev`, Laravel falls back to the production build at `public/build/` automatically. No config switch.
+You can also hit the API directly without the UI: `http://127.0.0.1:8000/api/issues` returns the 10 seeded tickets as JSON, two of which are already auto-flagged for escalation.
 
 ### Optional — turn on the LLM layer
 
